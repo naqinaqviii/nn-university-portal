@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js/dist/umd/supabase.js';
+import { createClient } from '@supabase/supabase-js';
 
 // Screenshot (image_3ee080.png) se nikala gaya sahi API URL:
 const supabaseUrl = 'https://zjqzeyxbcpezcdzaodim.supabase.co';

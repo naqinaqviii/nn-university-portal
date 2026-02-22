@@ -1,5 +1,34 @@
-import { useState, useRef } from "react";
-import { supabase } from "./supabaseClient"; 
+import React, { useState, useRef, Component } from "react";
+import { supabase } from "./supabaseClient";
+
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null, info: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, info) {
+    this.setState({ error, info });
+    // keep the error visible in console as well
+    console.error("Uncaught error in App:", error, info);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: 40, fontFamily: "sans-serif" }}>
+          <h2 style={{ color: "#b5451b" }}>Something went wrong</h2>
+          <div style={{ whiteSpace: "pre-wrap", marginTop: 12, color: "#333" }}>{String(this.state.error && this.state.error.message ? this.state.error.message : this.state.error)}</div>
+          <details style={{ marginTop: 12, color: "#666" }}>
+            {this.state.info && this.state.info.componentStack}
+          </details>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 const STEPS = ["Personal Info", "Academic", "Program", "Documents", "Submit"];
 
@@ -339,7 +368,8 @@ export default function App() {
   ];
 
   return (
-    <div style={{ minHeight: "100vh", background: G.ivory, fontFamily: "'Palatino Linotype', 'Book Antiqua', Georgia, serif" }}>
+    <ErrorBoundary>
+      <div style={{ minHeight: "100vh", background: G.ivory, fontFamily: "'Palatino Linotype', 'Book Antiqua', Georgia, serif" }}>
       <div style={{ background: `linear-gradient(160deg, ${G.deepGreen} 0%, ${G.darkGreen} 55%, #224d38 100%)`, padding: "48px 24px 64px", textAlign: "center", position: "relative" }}>
         <div style={{ width: 72, height: 72, borderRadius: "50%", background: `linear-gradient(135deg, ${G.midGreen}, ${G.accent})`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px", fontSize: 32 }}>🎓</div>
         <h1 style={{ margin: "0 0 6px", fontSize: 36, fontWeight: 900 }}><span style={{ color: "#fff" }}>NN</span><span style={{ color: G.lightAccent }}>-University</span></h1>
@@ -377,6 +407,7 @@ export default function App() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 }
